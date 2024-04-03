@@ -1,5 +1,5 @@
 import { describe, it, expect, jest } from '@jest/globals';
-import { findMiauw, insertMiaow } from './github';
+import { findMiauw, insertMiaow } from './github.js';
 
 const mockOctokit = {
   paginate: jest.fn(),

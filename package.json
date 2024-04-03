@@ -1,29 +1,35 @@
 {
-  "name": "app-token-action",
+  "name": "miaow-action",
   "version": "1.0.0",
   "main": "dist/index.js",
   "keywords": [
     "actions",
     "action",
     "github",
-    "app"
+    "cat"
   ],
   "license": "MIT",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "format": "prettier --write **/*.ts",
     "format-check": "prettier --check **/*.ts",
     "lint": "eslint src/**/*.ts",
     "test": "jest --coverage",
-    "build": "ncc build src/main.ts -o dist",
+    "build": "ncc build src/index.ts -o dist --source-map --license licenses.txt",
     "all": "npm run build && npm run format && npm run lint && npm run package && npm test",
-    "watch": "ts-node-dev --respawn --exit-child src/main.ts",
-    "release": "semantic-release"
+    "watch": "ts-node-dev --respawn --exit-child src/main.ts"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/node": "^20.11.29",
     "@vercel/ncc": "^0.38.1",
     "eslint": "^8.56.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-github": "^4.10.1",
     "eslint-plugin-jest": "^27.9.0",
     "jest": "^29.7.0",

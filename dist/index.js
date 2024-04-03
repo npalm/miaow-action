@@ -1,4 +1,4 @@
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 7351:
@@ -29326,41 +29326,30 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getRandomCatImage = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const CAT_API_URL = 'https://cataas.com/cat';
 const CAT_ERROR = 'https://http.cat/images/500.jpg';
-function getRandomCatImage() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const response = yield fetch(CAT_API_URL, {
-                method: 'GET',
-                headers: {
-                    Accept: 'application/json',
-                },
-            });
-            if (!response.ok) {
-                core.error(`Failed to fetch a random cat image: ${response.statusText}`);
-                return CAT_ERROR;
-            }
-            const responseData = yield response.json();
-            return `${CAT_API_URL}/${responseData._id}`;
-        }
-        catch (error) {
-            core.error(`Error: ${error}`);
+async function getRandomCatImage() {
+    try {
+        const response = await fetch(CAT_API_URL, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+            },
+        });
+        if (!response.ok) {
+            core.error(`Failed to fetch a random cat image: ${response.statusText}`);
             return CAT_ERROR;
         }
-    });
+        const responseData = await response.json();
+        return `${CAT_API_URL}/${responseData._id}`;
+    }
+    catch (error) {
+        core.error(`Error: ${error}`);
+        return CAT_ERROR;
+    }
 }
 exports.getRandomCatImage = getRandomCatImage;
 
@@ -29395,64 +29384,51 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.insertMiaow = exports.findMiauw = void 0;
 const rest_1 = __nccwpck_require__(5375);
 const core = __importStar(__nccwpck_require__(2186));
-function findMiauw(owner, repo, issue, token) {
-    return __awaiter(this, void 0, void 0, function* () {
-        core.debug(`Finding miauw in ${owner}/${repo}#${issue}`);
-        const octokit = new rest_1.Octokit({
-            auth: token,
+async function findMiauw(owner, repo, issue, token) {
+    core.debug(`Finding miauw in ${owner}/${repo}#${issue}`);
+    const octokit = new rest_1.Octokit({
+        auth: token,
+    });
+    // lookup issue comment for repo that contains the hidden markdown `<!-- miaow -->`. If a match return the latest one. Keep in mind the large number of comments (pageination).
+    const comments = await octokit.paginate(octokit.issues.listComments, {
+        owner,
+        repo,
+        issue_number: issue,
+    });
+    const miaowComment = comments.reverse().find(comment => comment.body?.includes('<!-- miaow -->'));
+    if (miaowComment) {
+        return miaowComment.id;
+    }
+    else {
+        return undefined;
+    }
+}
+exports.findMiauw = findMiauw;
+async function insertMiaow(owner, repo, issue, token, catImageUrl, commentId) {
+    const octokit = new rest_1.Octokit({
+        auth: token,
+    });
+    const comment = `![Miauw](${catImageUrl})\n<!-- miaow -->`;
+    if (commentId) {
+        await octokit.issues.updateComment({
+            owner,
+            repo,
+            comment_id: commentId,
+            body: comment,
         });
-        // lookup issue comment for repo that contains the hidden markdown `<!-- miaow -->`. If a match return the latest one. Keep in mind the large number of comments (pageination).
-        const comments = yield octokit.paginate(octokit.issues.listComments, {
+    }
+    else {
+        await octokit.issues.createComment({
             owner,
             repo,
             issue_number: issue,
+            body: comment,
         });
-        const miaowComment = comments.reverse().find(comment => { var _a; return (_a = comment.body) === null || _a === void 0 ? void 0 : _a.includes('<!-- miaow -->'); });
-        if (miaowComment) {
-            return miaowComment.id;
-        }
-        else {
-            return undefined;
-        }
-    });
-}
-exports.findMiauw = findMiauw;
-function insertMiaow(owner, repo, issue, token, catImageUrl, commentId) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const octokit = new rest_1.Octokit({
-            auth: token,
-        });
-        const comment = `![Miauw](${catImageUrl})\n<!-- miaow -->`;
-        if (commentId) {
-            yield octokit.issues.updateComment({
-                owner,
-                repo,
-                comment_id: commentId,
-                body: comment,
-            });
-        }
-        else {
-            yield octokit.issues.createComment({
-                owner,
-                repo,
-                issue_number: issue,
-                body: comment,
-            });
-        }
-    });
+    }
 }
 exports.insertMiaow = insertMiaow;
 
@@ -29487,39 +29463,29 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const github_1 = __nccwpck_require__(5438);
-const github_2 = __nccwpck_require__(978);
-const cat_1 = __nccwpck_require__(1110);
-function run() {
-    return __awaiter(this, void 0, void 0, function* () {
-        try {
-            const githubToken = core.getInput('GITHUB_TOKEN', { required: true });
-            core.setSecret(githubToken);
-            core.debug(`Context: ${JSON.stringify(github_1.context, null, 2)}`);
-            const id = yield (0, github_2.findMiauw)(github_1.context.repo.owner, github_1.context.repo.repo, github_1.context.issue.number, githubToken);
-            core.debug(`Miauw id: ${id}`);
-            const image = yield (0, cat_1.getRandomCatImage)();
-            core.debug(`Cat image: ${image}`);
-            yield (0, github_2.insertMiaow)(github_1.context.repo.owner, github_1.context.repo.repo, github_1.context.issue.number, githubToken, image, id);
-            core.debug('Miauw inserted');
-        }
-        catch (error) {
-            core.setFailed('Inserting cat failed');
-        }
-    });
+const github_js_1 = __nccwpck_require__(978);
+const cat_js_1 = __nccwpck_require__(1110);
+async function run() {
+    try {
+        const githubToken = core.getInput('GITHUB_TOKEN', { required: true });
+        core.setSecret(githubToken);
+        core.debug(`Context: ${JSON.stringify(github_1.context, null, 2)}`);
+        const id = await (0, github_js_1.findMiauw)(github_1.context.repo.owner, github_1.context.repo.repo, github_1.context.issue.number, githubToken);
+        core.debug(`Miauw id: ${id}`);
+        const image = await (0, cat_js_1.getRandomCatImage)();
+        core.debug(`Cat image: ${image}`);
+        await (0, github_js_1.insertMiaow)(github_1.context.repo.owner, github_1.context.repo.repo, github_1.context.issue.number, githubToken, image, id);
+        core.debug('Miauw inserted');
+    }
+    catch (error) {
+        core.setFailed('Inserting cat failed');
+    }
 }
-run();
+exports.run = run;
 
 
 /***/ }),
@@ -31411,12 +31377,19 @@ module.exports = parseParams
 /******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";
 /******/ 	
 /************************************************************************/
-/******/ 	
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	// This entry module is referenced by other modules so it can't be inlined
-/******/ 	var __webpack_exports__ = __nccwpck_require__(399);
-/******/ 	module.exports = __webpack_exports__;
-/******/ 	
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be in strict mode.
+(() => {
+"use strict";
+var exports = __webpack_exports__;
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+const main_js_1 = __nccwpck_require__(399);
+(0, main_js_1.run)();
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
+//# sourceMappingURL=index.js.map

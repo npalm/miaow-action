@@ -1,9 +1,9 @@
 import * as core from '@actions/core';
 import { context } from '@actions/github';
-import { findMiauw, insertMiaow } from './github';
-import { getRandomCatImage } from './cat';
+import { findMiauw, insertMiaow } from './github.js';
+import { getRandomCatImage } from './cat.js';
 
-async function run(): Promise<void> {
+export async function run(): Promise<void> {
   try {
     const githubToken = core.getInput('GITHUB_TOKEN', { required: true });
     core.setSecret(githubToken);
@@ -20,5 +20,3 @@ async function run(): Promise<void> {
     core.setFailed('Inserting cat failed');
   }
 }
-
-run();

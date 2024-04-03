@@ -1,6 +1,8 @@
 import { describe, it, expect, jest } from '@jest/globals';
-import { findMiauw } from './github';
-import { getRandomCatImage } from './cat';
+import { findMiauw } from './github.js';
+import { getRandomCatImage } from './cat.js';
+import { run } from './main.js';
+import * as core from '@actions/core';
 
 jest.mock('./github', () => ({
   findMiauw: jest.fn(),
@@ -24,20 +26,20 @@ jest.mock('@actions/github', () => ({
 }));
 
 describe('Main', () => {
+  beforeEach(() => {
+    delete process.env['INPUT_GITHUB_TOKEN'];
+  });
+
   it('should call findMiauw, getRandomCatImage and insertMiaow', async () => {
     process.env['INPUT_GITHUB_TOKEN'] = '__fake_token__';
-
-    await import('./main');
+    await run();
     expect(findMiauw).toHaveBeenCalled();
     expect(getRandomCatImage).toHaveBeenCalled();
   });
 
   it('should error if token is not set.', async () => {
-    try {
-      await import('./main');
-      expect(true).toBe(false);
-    } catch (error) {
-      expect(error).toBeInstanceOf(Error);
-    }
+    const setFailed = jest.spyOn(core, 'setFailed');
+    await run();
+    expect(setFailed).toHaveBeenCalledWith('Inserting cat failed');
   });
 });
