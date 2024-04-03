@@ -7,7 +7,7 @@
   },
   "extensionsToTreatAsEsm": [".ts"],
   "coverageReporters": ["lcov", "text", "html"],
-  "collectCoverageFrom": ["src/**/*.{ts,js,jsx}", "!src/**/*cli*.ts"],
+  "collectCoverageFrom": ["src/**/*.{ts,js,jsx}", "!src/index.ts"],
   "testEnvironment": "node",
   "collectCoverage": true,
   "clearMocks": true,

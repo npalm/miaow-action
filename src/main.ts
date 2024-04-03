@@ -20,5 +20,3 @@ export async function run(): Promise<void> {
     core.setFailed('Inserting cat failed');
   }
 }
-
-run();
