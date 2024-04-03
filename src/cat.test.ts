@@ -1,4 +1,4 @@
-import { getRandomCatImage } from './cat';
+import { getRandomCatImage } from './cat.js';
 import { describe, it, expect } from '@jest/globals';
 import { enableFetchMocks, FetchMock } from 'jest-fetch-mock';
 
