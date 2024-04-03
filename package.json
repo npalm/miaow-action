@@ -8,7 +8,6 @@
     "github",
     "cat"
   ],
-  "type": "module",
   "license": "MIT",
   "exports": {
     ".": "./dist/index.js"
